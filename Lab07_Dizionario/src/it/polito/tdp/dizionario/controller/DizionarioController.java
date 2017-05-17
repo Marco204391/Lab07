@@ -1,8 +1,10 @@
 package it.polito.tdp.dizionario.controller;
 
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
+import it.polito.tdp.dizionario.model.Model;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -10,6 +12,8 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 
 public class DizionarioController {
+	
+	private Model model;
 
 	@FXML
 	private ResourceBundle resources;
@@ -28,6 +32,7 @@ public class DizionarioController {
 	@FXML
 	private Button btnTrovaGradoMax;
 
+
 	@FXML
 	void doReset(ActionEvent event) {
 		txtResult.setText("Reset!");
@@ -35,11 +40,27 @@ public class DizionarioController {
 
 	@FXML
 	void doGeneraGrafo(ActionEvent event) {
-
 		try {
-			txtResult.setText("Controller -- TODO!");
+
+				int numeroLettere = Integer.parseInt(inputNumeroLettere.getText());
+				inputNumeroLettere.setEditable(false);
+				List<String> parole = model.createGraph(numeroLettere);
+				if (parole != null) {
+					txtResult.setText("Trovate " + parole.size() + " parole di lunghezza " + numeroLettere);
+				} else {	
+					txtResult.setText("Trovate 0 parole di lunghezza: " + numeroLettere);
+				}
+
+
+
+				btnGeneraGrafo.setDisable(true);
+
+
+
+			} catch (NumberFormatException nfe) {
+				txtResult.setText("Inserire un numero corretto di lettere!");
 			
-		} catch (RuntimeException re) {
+			} catch (RuntimeException re) {
 			txtResult.setText(re.getMessage());
 		}
 	}
@@ -74,5 +95,11 @@ public class DizionarioController {
 		assert btnGeneraGrafo != null : "fx:id=\"btnGeneraGrafo\" was not injected: check your FXML file 'Dizionario.fxml'.";
 		assert btnTrovaVicini != null : "fx:id=\"btnTrovaVicini\" was not injected: check your FXML file 'Dizionario.fxml'.";
 		assert btnTrovaGradoMax != null : "fx:id=\"btnTrovaTutti\" was not injected: check your FXML file 'Dizionario.fxml'.";
+	}
+
+	public void setModel(Model model) {
+		this.model=model;
+		// TODO Auto-generated method stub
+		
 	}
 }

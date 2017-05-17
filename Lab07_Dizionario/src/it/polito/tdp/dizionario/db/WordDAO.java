@@ -14,8 +14,44 @@ public class WordDAO {
 	 */
 	public List<String> getAllSimilarWords(String parola, int numeroLettere) {
 		
-		System.out.println("WordDAO -- TODO");
-		return new ArrayList<String>();
+		Connection conn = DBConnect.getInstance().getConnection();
+		String sql = "SELECT nome FROM parola WHERE nome LIKE ? AND LENGTH(nome) = ?;";
+		PreparedStatement st;
+		
+		try{
+			List<String> parole = new ArrayList<String>();
+			
+			char[] parolaOriginale = parola.toCharArray();
+			
+			System.out.println(parola);
+			for(int i=0;i< parola.length(); i++){
+				
+				char temp =parolaOriginale[i];
+				
+				parolaOriginale[i]='-';
+				String parolaDaCercare=String.copyValueOf(parolaOriginale);
+				parolaOriginale[i]=temp;
+			
+				System.out.println(parolaDaCercare);
+				
+				st = conn.prepareStatement(sql);
+				st.setString(1, parolaDaCercare);
+				st.setInt(2, numeroLettere);
+				ResultSet res = st.executeQuery();
+			
+				while (res.next()){
+						String nextWord =res.getString("nome");
+						if(parola.compareToIgnoreCase(nextWord)!=0)
+							parole.add(nextWord);
+				}
+			}
+			return parole;
+			
+	}catch (SQLException e) {
+			// TODO: handle exception
+			System.out.println("Errore connessione al database");
+			throw new RuntimeException("Error Connection Database");
+		}
 	}
 
 	/*
@@ -24,7 +60,7 @@ public class WordDAO {
 	public List<String> getAllWordsFixedLength(int numeroLettere) {
 
 		Connection conn = DBConnect.getInstance().getConnection();
-		String sql = "SELECT nome FROM parola WHERE LENGTH(nome) = ?;";
+		String sql = "SELECT nome FROM parola WHERE LENGTH(nome) = ? ;";
 		PreparedStatement st;
 
 		try {
@@ -47,4 +83,5 @@ public class WordDAO {
 		}
 	}
 
+	
 }
